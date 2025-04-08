@@ -1,0 +1,7 @@
+<class_libraries>
+  <library path="bspline_smoother">
+    <class type="nav2_smoother::BSplineSmoother" name="bspline_smoother/BSplineSmoother" base_class_type="nav2_core::Smoother">
+      <description>B-Spline smoother</description>
+    </class>
+  </library>
+</class_libraries>

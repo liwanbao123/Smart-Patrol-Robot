@@ -1,0 +1,2 @@
+source install/setup.bash
+ros2 launch multirobot_map_merge multi_tb3_simulation_launch.py slam_gmapping:=True

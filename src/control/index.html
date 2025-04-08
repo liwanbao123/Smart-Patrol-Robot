@@ -1,0 +1,379 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: 2px solid #3498db;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/roslib@1.3.0/build/roslib.js"></script>
+</head>
+
+<body>
+  <h1>ROS Web Controller</h1>
+  <div>
+    <button onclick="moveForward()">Forward</button>
+    <button onclick="moveBackward()">Backward</button>
+  </div>
+  <div>
+    <button onclick="moveLeft()">Left</button>
+    <button onclick="stopMovement()">Stop</button>
+    <button onclick="moveRight()">Right</button>
+  </div>
+
+  <script>
+    let ros;
+    let cmdVel;
+
+    function startConnection() {
+      ros = new ROSLIB.Ros({
+        url: 'ws://localhost:9090' // 替换为你的Rosbridge服务器地址,主要将 localhost 改成你的主机IP地址，比如 ws://192.168.1.2:9090
+      });
+
+      ros.on('connection', () => {
+        console.log('Connected to ROS Bridge');
+        cmdVel = new ROSLIB.Topic({
+          ros: ros,
+          name: '/cmd_vel',
+          messageType: 'geometry_msgs/Twist'
+        });
+      });
+
+      ros.on('error', (error) => {
+        console.error('Error connecting to ROS: ', error);
+        alert('Error connecting to ROS: 9090', error);
+      });
+
+      ros.on('close', () => {
+        console.log('Disconnected from ROS');
+        alert('Disconnected from ROS');
+      });
+    }
+
+    function move(direction) {
+      if (!ros) {
+        console.error('ROS connection not established');
+        alert('ROS connection not established');
+        return;
+      }
+
+      if (!cmdVel) {
+        console.error('Publisher not created');
+        alert('Publisher not created');
+        return;
+      }
+
+      const twist = new ROSLIB.Message({
+        linear: {
+          x: direction.linear.x,
+          y: direction.linear.y,
+          z: direction.linear.z
+        },
+        angular: {
+          x: direction.angular.x,
+          y: direction.angular.y,
+          z: direction.angular.z
+        }
+      });
+
+      cmdVel.publish(twist);
+    }
+
+    function moveForward() {
+      const moveForwardMsg = {
+        linear: { x: 0.2, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: 0 }
+      };
+      move(moveForwardMsg);
+    }
+
+    function moveBackward() {
+      const moveBackwardMsg = {
+        linear: { x: -0.2, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: 0 }
+      };
+      move(moveBackwardMsg);
+    }
+
+    function moveLeft() {
+      const moveLeftMsg = {
+        linear: { x: 0, y: 0.0, z: 0 },
+        angular: { x: 0, y: 0, z: 0.5 }
+      };
+      move(moveLeftMsg);
+    }
+
+    function moveRight() {
+      const moveRightMsg = {
+        linear: { x: 0, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: -0.5 }
+      };
+      move(moveRightMsg);
+    }
+
+    function stopMovement() {
+      const stopMsg = {
+        linear: { x: 0, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: 0 }
+      };
+      move(stopMsg);
+    }
+
+    startConnection(); // 初始化ROS连接
+  </script>
+</body>
+
+</html>
+ -->
+
+
+
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROS Robot Controller</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3f51b5;
+      --hover-color: #303f9f;
+      --bg-color: #f5f5f5;
+      --button-size: 80px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-color);
+      font-family: 'Roboto', sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 2rem;
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      justify-items: center;
+      margin-bottom: 20px;
+    }
+
+    .dpad-container {
+      position: relative;
+      width: calc(var(--button-size) * 2 + 30px);
+      height: calc(var(--button-size) * 2 + 30px);
+      margin: 20px auto;
+    }
+
+    .control-btn {
+      width: var(--button-size);
+      height: var(--button-size);
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      box-shadow: 5px 5px 10px #d1d1d1,
+                  -5px -5px 10px #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+      box-shadow: 2px 2px 5px #d1d1d1,
+                  -2px -2px 5px #ffffff;
+    }
+
+    .control-btn:hover {
+      color: var(--hover-color);
+    }
+
+    #btn-forward { top: 0; left: 50%; transform: translateX(-50%); }
+    #btn-backward { bottom: 0; left: 50%; transform: translateX(-50%); }
+    #btn-left { top: 50%; left: 0; transform: translateY(-50%); }
+    #btn-right { top: 50%; right: 0; transform: translateY(-50%); }
+    #btn-stop { 
+      grid-column: 2;
+      width: calc(var(--button-size) * 1.5);
+      height: calc(var(--button-size) * 1.5);
+      background: #f44336;
+      color: white;
+      box-shadow: 5px 5px 10px #d1d1d1,
+                  -5px -5px 10px #ffffff;
+    }
+
+    .status-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ccc;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .connected { background: #4CAF50; }
+    .disconnected { background: #f44336; }
+
+    @media (max-width: 480px) {
+      :root {
+        --button-size: 60px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .control-btn {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/roslib@1.3.0/build/roslib.js"></script>
+</head>
+
+<body>
+  <div class="status-indicator" id="status"></div>
+  <div class="container">
+    <h1>Robot Controller</h1>
+    
+    <div class="dpad-container">
+      <button class="control-btn" id="btn-forward" onclick="moveForward()">↑</button>
+      <button class="control-btn" id="btn-backward" onclick="moveBackward()">↓</button>
+      <button class="control-btn" id="btn-left" onclick="moveLeft()">←</button>
+      <button class="control-btn" id="btn-right" onclick="moveRight()">→</button>
+    </div>
+
+    <div class="control-grid">
+      <button class="control-btn" id="btn-stop" onclick="stopMovement()">⏹</button>
+    </div>
+  </div>
+
+  <script>
+    let ros;
+    let cmdVel;
+    const statusIndicator = document.getElementById('status');
+
+    function updateStatus(connected) {
+      statusIndicator.classList.remove(connected ? 'disconnected' : 'connected');
+      statusIndicator.classList.add(connected ? 'connected' : 'disconnected');
+    }
+
+    function initROS() {
+      ros = new ROSLIB.Ros({
+        url: 'ws://192.168.5.2:9090' // 更改为实际ROS桥接地址
+      });
+
+      ros.on('connection', () => {
+        console.log('ROS connected');
+        updateStatus(true);
+        cmdVel = new ROSLIB.Topic({
+          ros: ros,
+          name: '/cmd_vel',
+          messageType: 'geometry_msgs/Twist'
+        });
+      });
+
+      ros.on('error', (error) => {
+        console.error('Connection error:', error);
+        updateStatus(false);
+      });
+
+      ros.on('close', () => {
+        console.log('Connection closed');
+        updateStatus(false);
+      });
+    }
+
+    function publishCommand(linearX = 0, angularZ = 0) {
+      if (!ros || !cmdVel) {
+        console.warn('ROS connection not ready');
+        return;
+      }
+
+      const twist = new ROSLIB.Message({
+        linear: { x: linearX, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: angularZ }
+      });
+
+      cmdVel.publish(twist);
+    }
+
+    // 控制函数
+    const moveForward = () => publishCommand(0.2, 0);
+    const moveBackward = () => publishCommand(-0.2, 0);
+    const moveLeft = () => publishCommand(0, 0.5);
+    const moveRight = () => publishCommand(0, -0.5);
+    const stopMovement = () => publishCommand(0, 0);
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', initROS);
+    
+    // 添加键盘控制
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowUp': moveForward(); break;
+        case 'ArrowDown': moveBackward(); break;
+        case 'ArrowLeft': moveLeft(); break;
+        case 'ArrowRight': moveRight(); break;
+        case ' ': stopMovement(); break;
+      }
+    });
+  </script>
+</body>
+
+</html>

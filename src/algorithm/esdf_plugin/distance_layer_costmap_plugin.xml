@@ -1,0 +1,5 @@
+<library path="esdf_plugin">
+	<class name="nav2_costmap_2d/DistanceLayer" type="nav2_costmap_2d::DistanceLayer" base_class_type="nav2_costmap_2d::Layer">
+	  <description>This is a nav2 distance layer plugin.</description>
+	</class>
+</library>

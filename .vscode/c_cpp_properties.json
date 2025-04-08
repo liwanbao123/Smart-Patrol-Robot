@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/opt/ros/humble/include/**",
+                "/usr/include/**",
+                "/usr/lib/**",
+                "/usr/local/include",
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/install/**"
+            ],
+            "name": "ROS",
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "gnu17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+  }

@@ -1,0 +1,10 @@
+/lwbot_camera:
+  ros__parameters:
+    face_detect: 0
+    framesize: 5
+    hmirror: 0
+    led_intensity: 0
+    quality: 10
+    use_sim_time: false
+    vflip: 0
+
